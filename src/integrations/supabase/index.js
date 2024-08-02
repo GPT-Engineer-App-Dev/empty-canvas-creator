@@ -19,20 +19,69 @@ const fromSupabase = async (query) => {
 
 /* supabase integration types
 
+### documents
+
+| name       | type                     | format | required |
+|------------|--------------------------|--------|----------|
+| id         | int8                     | number | true     |
+| created_at | timestamp with time zone | string | true     |
+| title      | text                     | string | false    |
+| content    | text                     | string | false    |
+
 ### items
 
-| name       | type                     | format  | required |
-|------------|--------------------------|---------|----------|
-| id         | int8                     | number  | true     |
-| created_at | timestamp with time zone | string  | true     |
-| name       | text                     | string  | false    |
-| size       | int8                     | number  | false    |
-| price      | real                     | number  | false    |
+| name       | type                     | format | required |
+|------------|--------------------------|--------|----------|
+| id         | int8                     | number | true     |
+| created_at | timestamp with time zone | string | true     |
+| name       | text                     | string | false    |
+| size       | int8                     | number | false    |
+| price      | real                     | number | false    |
 
 */
 
-// Hooks for items table
+// Documents hooks
+export const useDocuments = () => useQuery({
+    queryKey: ['documents'],
+    queryFn: () => fromSupabase(supabase.from('documents').select('*')),
+});
 
+export const useDocument = (id) => useQuery({
+    queryKey: ['documents', id],
+    queryFn: () => fromSupabase(supabase.from('documents').select('*').eq('id', id).single()),
+});
+
+export const useAddDocument = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (newDocument) => fromSupabase(supabase.from('documents').insert([newDocument])),
+        onSuccess: () => {
+            queryClient.invalidateQueries('documents');
+        },
+    });
+};
+
+export const useUpdateDocument = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ id, ...updateData }) => fromSupabase(supabase.from('documents').update(updateData).eq('id', id)),
+        onSuccess: () => {
+            queryClient.invalidateQueries('documents');
+        },
+    });
+};
+
+export const useDeleteDocument = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id) => fromSupabase(supabase.from('documents').delete().eq('id', id)),
+        onSuccess: () => {
+            queryClient.invalidateQueries('documents');
+        },
+    });
+};
+
+// Items hooks
 export const useItems = () => useQuery({
     queryKey: ['items'],
     queryFn: () => fromSupabase(supabase.from('items').select('*')),
@@ -41,7 +90,6 @@ export const useItems = () => useQuery({
 export const useItem = (id) => useQuery({
     queryKey: ['items', id],
     queryFn: () => fromSupabase(supabase.from('items').select('*').eq('id', id).single()),
-    enabled: !!id,
 });
 
 export const useAddItem = () => {
