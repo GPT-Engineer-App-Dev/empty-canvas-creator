@@ -1,6 +1,7 @@
-import { Home, Package } from "lucide-react";
+import { Home, Package, LogIn } from "lucide-react";
 import Index from "./pages/Index.jsx";
 import Items from "./pages/Items.jsx";
+import Login from "./pages/Login.jsx";
 
 /**
  * Central place for defining the navigation items. Used for navigation components and routing.
@@ -17,5 +18,11 @@ export const navItems = [
     to: "/items",
     icon: <Package className="h-4 w-4" />,
     page: <Items />,
+  },
+  {
+    title: "Login",
+    to: "/login",
+    icon: <LogIn className="h-4 w-4" />,
+    page: <Login />,
   },
 ];
